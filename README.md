@@ -6,4 +6,4 @@ playing around with discord js and to make low quality shit posting bots
 
 - [x] refactor repo for many shitty bots to join this nightmare
 
-- [] find cool free service to run the 🤖
+- [ ] find cool free service to run the 🤖
