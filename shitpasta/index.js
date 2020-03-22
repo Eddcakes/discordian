@@ -7,37 +7,37 @@ client.once("ready", () => {
   console.log("🤖 armed for shitposting 🤖");
 });
 
-const url = "https://www.reddit.com/r/copypasta/hot.json";
-
-client.on("message", msg => {
+client.on("message", async msg => {
   if (
     msg.guild.id === process.env.SERVER_ID &&
     msg.channel.id === process.env.CHANNEL_ID
   ) {
     if (msg.author.bot) return;
-    if (msg.content.startsWith("!shitpost")) {
-      spamage()
+    if (
+      msg.content.startsWith("!shitpost") ||
+      msg.content.startsWith("!shitpasta")
+      // if SHITPASTA could tocaps the message lol
+    ) {
+      await spamage("copypasta")
         .then(content => {
           /* 
-        ok so DiscordAPIError is thrown when body > 2000 chacters so need to check for this
-        tts only speaks a few sentences through
-        could we try breaking up into multiple messages to solve both of these?
+          now the message is chunked for tts it says the bot name each new chunk 
+          `beepboop said:` every 184 char chunk 
         */
-          return msg.channel.send(content, { tts: true });
+          content.map(chunkedContent => {
+            msg.channel.send(chunkedContent, {
+              tts: true
+            });
+          });
         })
-        .catch(
-          msg.channel.send("oooopsy whoopsy something went wrong 😢", {
-            tts: true
-          })
-        );
+        .catch(err => console.log("spamage error: ", err));
     }
   }
 });
-
 client.login(process.env.BOT_TOKEN);
 
-function spamage() {
-  return fetch("https://www.reddit.com/r/copypasta/hot.json")
+function spamage(subreddit) {
+  return fetch(`https://www.reddit.com/r/${subreddit}/hot.json`)
     .then(response => response.json())
     .then(call => {
       const posts = call.data.children;
@@ -47,10 +47,28 @@ function spamage() {
       const title = posts[rndIndex].data.title;
       const selftext = posts[rndIndex].data.selftext;
       if (title.length > selftext.length) {
-        return title;
+        return chunk(title);
       } else {
-        return selftext;
+        return chunk(selftext);
       }
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      return console.log(err);
+    });
+}
+
+//break content into chunks less than 184 characters
+function chunk(text) {
+  //185 characters seems to be longest discord tts reads
+  const maxChunkSize = 184;
+  let chunks = [];
+  //might be nice to break at closest space before 185th character to only split "full" words
+  if (text.length > maxChunkSize) {
+    for (let ii = 0; ii < text.length; ii += maxChunkSize) {
+      chunks.push(text.substring(ii, ii + maxChunkSize));
+    }
+  } else {
+    chunks.push(text);
+  }
+  return chunks;
 }
