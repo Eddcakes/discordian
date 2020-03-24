@@ -60,12 +60,21 @@ function spamage(subreddit) {
 //break content into chunks less than 184 characters
 function chunk(text) {
   //185 characters seems to be longest discord tts reads
+  let ii, lastSpaceIndex;
   const maxChunkSize = 184;
   let chunks = [];
-  //might be nice to break at closest space before 185th character to only split "full" words
   if (text.length > maxChunkSize) {
-    for (let ii = 0; ii < text.length; ii += maxChunkSize) {
-      chunks.push(text.substring(ii, ii + maxChunkSize));
+    for (ii = 0; ii < text.length; ii += lastSpaceIndex) {
+      let temp = text.substring(ii, ii + maxChunkSize);
+      lastSpaceIndex = temp.lastIndexOf(" ");
+      // need to check for the last "part" otherwise last index of space
+      // will mean ii is always less than text.length
+      if (ii + maxChunkSize > text.length) {
+        chunks.push(text.substring(ii, ii + maxChunkSize));
+        break;
+      } else {
+        chunks.push(text.substring(ii, ii + lastSpaceIndex));
+      }
     }
   } else {
     chunks.push(text);
