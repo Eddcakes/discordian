@@ -18,7 +18,7 @@ const responseArray = [
   'Sorry you are not permitted to use this emote, GIT GUD SCRUB',
   'smh cheese cape wanker',
 ];
-const rndIndex = Math.floor(Math.random() * responseArray.length - 1);
+const rndIndex = Math.floor(Math.random() * responseArray.length);
 
 client.on('message', async (msg) => {
   if (
