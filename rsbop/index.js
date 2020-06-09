@@ -7,6 +7,9 @@ const userList = JSON.parse(userListJSON);
 const infernoUserIds = userList.reduce((ids, user) => {
   return user.inferno ? [...ids, user.discordId.toString()] : [...ids];
 }, []);
+const maxCapeUserIds = userList.reduce((ids, user) => {
+  return user.max ? [...ids, user.discordId.toString()] : [...ids];
+}, []);
 
 client.once('ready', () => {
   console.log('Ready!');
@@ -14,11 +17,16 @@ client.once('ready', () => {
 
 client.login(process.env.BOT_TOKEN);
 
-const responseArray = [
+const infernoRespArray = [
   'Sorry you are not permitted to use this emote, GIT GUD SCRUB',
   'smh cheese cape wanker',
+  'Really? Again? SMH',
+  'Sorry you do not reach the minimum skill threshold to use this emote',
+  'Maybe you should try harder?',
+  '👀 does it even need to be said? 🤦‍♂️',
+  'Shall we see whos selling? 💰💰🌋',
 ];
-const rndIndex = Math.floor(Math.random() * responseArray.length);
+const rndInfernoIndex = Math.floor(Math.random() * infernoRespArray.length);
 
 client.on('message', async (msg) => {
   if (
@@ -26,9 +34,20 @@ client.on('message', async (msg) => {
     msg.channel.id === process.env.CHANNEL_ID
   ) {
     if (msg.author.bot) return;
-    if (msg.content.includes(':capebtw:')) {
+    if (msg.content.includes(':maxinfernal:')) {
+      if (
+        !infernoUserIds.includes(msg.author.id) &&
+        !maxCapeUserIds.includes(msg.author.id)
+      ) {
+        msg.reply('OK, keep dreaming mate');
+      } else {
+        msg.reply(
+          `haha only ${Math.floor(Math.random() * 100000)} hours to go...`
+        );
+      }
+    } else if (msg.content.includes(':capebtw:')) {
       if (!infernoUserIds.includes(msg.author.id)) {
-        msg.reply(responseArray[rndIndex]);
+        msg.reply(infernoRespArray[rndInfernoIndex]);
       }
     }
   }
