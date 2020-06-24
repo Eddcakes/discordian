@@ -26,7 +26,6 @@ const infernoRespArray = [
   '👀 does it even need to be said? 🤦‍♂️',
   'Shall we see whos selling? 💰💰🌋',
 ];
-const rndInfernoIndex = Math.floor(Math.random() * infernoRespArray.length);
 
 client.on('message', async (msg) => {
   if (
@@ -40,14 +39,16 @@ client.on('message', async (msg) => {
         !maxCapeUserIds.includes(msg.author.id)
       ) {
         msg.reply('OK, keep dreaming mate');
-      } else {
+      } else if (!maxCapeUserIds.includes(msg.author.id)){
         msg.reply(
           `haha only ${Math.floor(Math.random() * 100000)} hours to go...`
         );
       }
     } else if (msg.content.includes(':capebtw:')) {
       if (!infernoUserIds.includes(msg.author.id)) {
-        msg.reply(infernoRespArray[rndInfernoIndex]);
+        msg.reply(
+          infernoRespArray[Math.floor(Math.random() * infernoRespArray.length)]
+          );
       }
     }
   }
